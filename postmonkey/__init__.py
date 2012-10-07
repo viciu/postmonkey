@@ -1,6 +1,9 @@
+#encoding: utf-8
 import json
 import requests
 from functools import partial
+from urllib import quote
+
 
 from . exceptions import (
     SerializationError,
@@ -108,6 +111,11 @@ class PostMonkey(object):
         Raises a ``SerializationError`` if data cannot be serialized.
         """
         params = self.params.copy()
+        for key in payload.keys():
+            try:
+                payload[key] = quote(payload[key])
+            except TypeError:
+                """Ignoring situation, when payload value can't be quoted"""
         params.update(payload)
         try:
             serialized = json.dumps(params)
